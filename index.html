@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Would you be my Valentine?</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4, #a18cd1);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      text-align: center;
+      max-width: 800px;
+      width: 100%;
+      padding: 40px 30px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 25px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      border: 8px solid #ff4d6d;
+    }
+
+    .container::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background: linear-gradient(45deg, #ff9a9e, #ff4d6d, #ff758c, #ff9a9e);
+      z-index: -1;
+      border-radius: 30px;
+      opacity: 0.7;
+    }
+
+    h1 {
+      color: #ff4d6d;
+      font-size: 3.5rem;
+      margin-bottom: 30px;
+      text-shadow: 3px 3px 0 rgba(255, 77, 109, 0.2);
+      position: relative;
+      padding-bottom: 20px;
+    }
+
+    h1::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      width: 50%;
+      height: 4px;
+      background: linear-gradient(to right, transparent, #ff4d6d, transparent);
+    }
+
+    .heart {
+      color: #ff4d6d;
+      font-size: 2.5rem;
+      margin: 10px 0 30px;
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .buttons-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+      position: relative;
+      min-height: 200px;
+    }
+
+    .btn {
+      padding: 20px 50px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-yes {
+      background: linear-gradient(to right, #4CAF50, #8BC34A);
+      color: white;
+      transform: scale(1);
+      transition: transform 0.5s ease;
+    }
+
+    .btn-yes:hover {
+      background: linear-gradient(to right, #45a049, #7CB342);
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-yes:active {
+      transform: scale(0.95);
+    }
+
+    .btn-no {
+      background: linear-gradient(to right, #f44336, #FF9800);
+      color: white;
+      position: relative;
+      transition: transform 0.1s ease;
+    }
+
+    .btn-no:hover {
+      background: linear-gradient(to right, #d32f2f, #F57C00);
+    }
+
+    .message {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ff4d6d;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 15px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+      animation: fadeInOut 2s ease;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; top: -80px; }
+      20% { opacity: 1; top: -60px; }
+      80% { opacity: 1; top: -60px; }
+      100% { opacity: 0; top: -80px; }
+    }
+
+    .floating-hearts {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-heart {
+      position: absolute;
+      font-size: 1.5rem;
+      color: #ff4d6d;
+      opacity: 0;
+      animation: floatUp 5s linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .counter {
+      position: absolute;
+      bottom: -40px;
+      right: 20px;
+      color: #ff4d6d;
+      font-size: 1.2rem;
+      font-weight: bold;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .btn {
+        padding: 15px 30px;
+        font-size: 1.5rem;
+      }
+
+      .buttons-container {
+        gap: 20px;
+        min-height: 180px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        font-size: 1.3rem;
+      }
+
+      .buttons-container {
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+
+    .share-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ff4d6d;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+      z-index: 100;
+      transition: all 0.3s ease;
+      display: none;
+    }
+
+    .share-btn:hover {
+      background-color: #ff3359;
+      transform: scale(1.05);
+    }
+
+    .success-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      display: none;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .notification-badge {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #4CAF50;
+      color: white;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      z-index: 1000;
+      display: none;
+    }
+
+    .notification-badge.active {
+      display: block;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Would you be my Valentine?</h1>
+  <div class="heart">
+    <i class="fas fa-heart"></i>
+    <i class="fas fa-heart"></i>
+    <i class="fas fa-heart"></i>
+  </div>
+
+  <div class="buttons-container">
+    <div class="message" id="message">Are you sure?</div>
+
+    <button class="btn btn-yes" id="yesBtn">
+      <i class="fas fa-heart"></i> Yeeeessss <i class="fas fa-heart"></i>
+    </button>
+
+    <button class="btn btn-no" id="noBtn">
+      <i class="fas fa-times-circle"></i> No
+    </button>
+
+    <div class="counter">
+      No clicked: <span id="clickCount">0</span> times
+    </div>
+  </div>
+
+  <div class="floating-hearts" id="heartsContainer"></div>
+</div>
+
+<!-- Badge de notification silencieux -->
+<div class="notification-badge" id="notificationBadge"></div>
+
+<!-- Bouton pour copier le lien -->
+<button class="share-btn" id="shareBtn">
+  <i class="fas fa-share-alt"></i> Partager le lien
+</button>
+
+<!-- Message de succès -->
+<div class="success-message" id="successMessage">
+  <i class="fas fa-check-circle"></i> Lien copié dans le presse-papier!
+</div>
+
+<script>
+  // ===========================================
+  // CONFIGURATION EMAILJS - AVEC VOS IDENTIFIANTS
+  // ===========================================
+  const EMAILJS_CONFIG = {
+    SERVICE_ID: 'service_6sssafh',     // Votre Service ID
+    TEMPLATE_ID: 'template_yv6s9fp',   // Votre Template ID
+    PUBLIC_KEY: 'IWwln4uuXray9VkJp'    // Votre Public Key
+  };
+  // ===========================================
+
+  // Variables globales
+  let noClickCount = 0;
+  const messages = [
+    "Are you sure?",
+    "Are you sure you're sure?",
+    "You better say yes!",
+    "OK, I'll make it impossible to say no!"
+  ];
+
+  // Récupération des éléments DOM
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const message = document.getElementById('message');
+  const clickCountElement = document.getElementById('clickCount');
+  const heartsContainer = document.getElementById('heartsContainer');
+  const shareBtn = document.getElementById('shareBtn');
+  const successMessage = document.getElementById('successMessage');
+  const notificationBadge = document.getElementById('notificationBadge');
+
+  // Vérifier si EmailJS est configuré
+  function isEmailJSConfigured() {
+    return EMAILJS_CONFIG.SERVICE_ID &&
+            EMAILJS_CONFIG.TEMPLATE_ID &&
+            EMAILJS_CONFIG.PUBLIC_KEY;
+  }
+
+  // Initialisation d'EmailJS
+  (function() {
+    if (isEmailJSConfigured()) {
+      emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+      console.log("✅ EmailJS initialisé avec succès");
+      console.log("📧 Les notifications seront envoyées à: mbouazzaoui4@gmail.com");
+    } else {
+      console.error("❌ EmailJS n'est pas correctement configuré");
+    }
+  })();
+
+  // Au chargement de la page
+  document.addEventListener('DOMContentLoaded', function() {
+    // Créer des cœurs flottants en arrière-plan
+    createFloatingHearts();
+
+    // Configurer les événements
+    setupEventListeners();
+
+    // Afficher le bouton de partage après 3 secondes
+    setTimeout(() => {
+      shareBtn.style.display = 'block';
+    }, 3000);
+  });
+
+  // Créer des cœurs flottants en arrière-plan
+  function createFloatingHearts() {
+    for (let i = 0; i < 15; i++) {
+      const heart = document.createElement('div');
+      heart.classList.add('floating-heart');
+      heart.innerHTML = '<i class="fas fa-heart"></i>';
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.animationDelay = Math.random() * 5 + 's';
+      heart.style.fontSize = (Math.random() * 1 + 1) + 'rem';
+      heart.style.color = `rgba(255, 77, 109, ${Math.random() * 0.5 + 0.5})`;
+      heartsContainer.appendChild(heart);
+    }
+  }
+
+  // Configurer tous les événements
+  function setupEventListeners() {
+    // Effet pour le bouton "No" quand la souris approche
+    noBtn.addEventListener('mouseover', function() {
+      if (noClickCount < 3) {
+        moveNoButton();
+      }
+    });
+
+    // Gestion du clic sur le bouton "No"
+    noBtn.addEventListener('click', function() {
+      handleNoClick();
+    });
+
+    // Gestion du clic sur le bouton "Yes"
+    yesBtn.addEventListener('click', function() {
+      handleYesClick();
+    });
+
+    // Gestion du bouton de partage
+    shareBtn.addEventListener('click', function() {
+      shareLink();
+    });
+  }
+
+  // Déplacer le bouton "No" de manière aléatoire
+  function moveNoButton() {
+    const container = document.querySelector('.buttons-container');
+    const containerRect = container.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+
+    // Calculer une position aléatoire à l'intérieur du conteneur
+    const maxX = containerRect.width - btnRect.width;
+    const maxY = containerRect.height - btnRect.height;
+
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+
+    // Déplacer le bouton
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = randomX + 'px';
+    noBtn.style.top = randomY + 'px';
+  }
+
+  // Gérer le clic sur le bouton "No"
+  function handleNoClick() {
+    noClickCount++;
+    clickCountElement.textContent = noClickCount;
+
+    // Afficher le message correspondant au nombre de clics
+    if (noClickCount <= messages.length) {
+      message.textContent = messages[noClickCount - 1];
+      message.classList.remove('show');
+      void message.offsetWidth;
+      message.classList.add('show');
+    }
+
+    // Effet spécial au 4ème clic
+    if (noClickCount >= 4) {
+      // Agrandir le bouton "Yes"
+      yesBtn.style.transform = 'scale(3)';
+      yesBtn.style.zIndex = '100';
+      yesBtn.style.transition = 'transform 1s ease';
+
+      // Déplacer le bouton "No" en dehors de l'écran
+      noBtn.style.left = '150%';
+      noBtn.style.top = '50%';
+
+      // Ajouter des cœurs supplémentaires
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.classList.add('floating-heart');
+          heart.innerHTML = '<i class="fas fa-heart"></i>';
+          heart.style.left = Math.random() * 100 + '%';
+          heart.style.animationDelay = '0s';
+          heart.style.fontSize = '2rem';
+          heart.style.color = '#ff4d6d';
+          heartsContainer.appendChild(heart);
+
+          setTimeout(() => {
+            heart.remove();
+          }, 5000);
+        }, i * 300);
+      }
+    }
+
+    // Envoyer une notification pour chaque clic sur "No"
+    sendEmailNotification('NON', noClickCount);
+  }
+
+  // Gérer le clic sur le bouton "Yes"
+  function handleYesClick() {
+    // Créer une explosion de cœurs
+    for (let i = 0; i < 30; i++) {
+      setTimeout(() => {
+        const heart = document.createElement('div');
+        heart.classList.add('floating-heart');
+        heart.innerHTML = '<i class="fas fa-heart"></i>';
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDelay = '0s';
+        heart.style.fontSize = (Math.random() * 2 + 1.5) + 'rem';
+        heart.style.color = `rgba(255, 77, 109, ${Math.random() * 0.5 + 0.5})`;
+        heartsContainer.appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 5000);
+      }, i * 100);
+    }
+
+    // Changer le texte et le style
+    yesBtn.innerHTML = '<i class="fas fa-heart"></i> YAY! You made me happy! <i class="fas fa-heart"></i>';
+    yesBtn.style.background = 'linear-gradient(to right, #FF4081, #FF80AB)';
+    yesBtn.style.fontSize = '1.5rem';
+    yesBtn.style.padding = '25px 60px';
+    yesBtn.style.transform = 'scale(1.2)';
+    yesBtn.style.transition = 'all 0.5s ease';
+
+    // Cacher le bouton "No"
+    noBtn.style.display = 'none';
+
+    // Afficher un message de félicitations
+    message.textContent = "You've made the right choice! Happy Valentine's Day! 💖";
+    message.style.backgroundColor = '#4CAF50';
+    message.classList.remove('show');
+    void message.offsetWidth;
+    message.classList.add('show');
+
+    // Garder le message visible plus longtemps
+    setTimeout(() => {
+      message.classList.remove('show');
+    }, 5000);
+
+    // Envoyer une notification
+    sendEmailNotification('OUI', noClickCount);
+
+    // Afficher le badge de notification
+    showNotificationBadge();
+  }
+
+  // Envoyer une notification par email (silencieux)
+  function sendEmailNotification(choice, clicks) {
+    // Vérifier si EmailJS est configuré
+    if (!isEmailJSConfigured()) {
+      console.error("❌ EmailJS n'est pas configuré. La notification ne sera pas envoyée.");
+      return;
+    }
+
+    // Préparer les données pour l'email
+    const templateParams = {
+      choice: choice,
+      clicks: clicks,
+      date: new Date().toLocaleString('fr-FR'),
+      url: window.location.href,
+      user_agent: navigator.userAgent.substring(0, 100),
+      language: navigator.language,
+      to_email: 'mbouazzaoui4@gmail.com'
+    };
+
+    // Envoyer l'email via EmailJS
+    emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, templateParams)
+            .then(function(response) {
+              console.log('✅ Email envoyé avec succès à mbouazzaoui4@gmail.com!', response.status, response.text);
+
+              // Afficher le badge de notification
+              showNotificationBadge();
+            })
+            .catch(function(error) {
+              console.error('❌ Erreur lors de l\'envoi de l\'email:', error);
+              console.log('Détails de l\'erreur:', JSON.stringify(error));
+
+              // Fallback simple: afficher un message dans la console
+              console.log("Fallback - Données de notification:");
+              console.log("Choix:", choice);
+              console.log("Clics sur Non:", clicks);
+              console.log("Date:", new Date().toLocaleString());
+              console.log("URL:", window.location.href);
+            });
+  }
+
+  // Afficher le badge de notification
+  function showNotificationBadge() {
+    notificationBadge.classList.add('active');
+
+    // Cacher le badge après 5 secondes
+    setTimeout(() => {
+      notificationBadge.classList.remove('active');
+    }, 5000);
+  }
+
+  // Fonction pour partager/copier le lien
+  function shareLink() {
+    const url = window.location.href;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url)
+              .then(() => {
+                showSuccessMessage();
+              })
+              .catch(err => {
+                fallbackCopyTextToClipboard(url);
+              });
+    } else {
+      fallbackCopyTextToClipboard(url);
+    }
+  }
+
+  // Fallback pour copier du texte (anciens navigateurs)
+  function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand('copy');
+      showSuccessMessage();
+    } catch (err) {
+      console.error('Erreur lors de la copie: ', err);
+      alert('Impossible de copier le lien. Voici le lien: ' + text);
+    }
+
+    document.body.removeChild(textArea);
+  }
+
+  // Afficher un message de succès
+  function showSuccessMessage() {
+    successMessage.style.display = 'block';
+    setTimeout(() => {
+      successMessage.style.display = 'none';
+    }, 3000);
+  }
+
+  // Exposer la fonction de partage globalement
+  window.shareLink = shareLink;
+</script>
+</body>
+</html>
